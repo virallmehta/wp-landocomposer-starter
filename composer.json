@@ -1,0 +1,37 @@
+{
+    "name": "viralmehta/wplckit",
+    "description": "WordPress, Composer, Lando",
+    "type": "project",
+    "authors": [
+        {
+            "name": "virallmehta",
+            "email": "virallmehta@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "johnpbloch/wordpress-core-installer": "^2.0",
+        "johnpbloch/wordpress-core": "^5.8",
+        "wp-cli/wp-cli-bundle": "^2.5",
+        "psy/psysh": "^0.11.0"
+    },
+    "extra": {
+        "installer-paths": {
+          "wordpress/wp-content/plugins/{$name}": [
+            "type:wordpress-plugin"
+          ],
+          "wordpress/wp-content/themes/{$name}": [
+            "type:wordpress-theme"
+          ],
+          "wordpress/wp-content/mu-plugins/{$name}": [
+            "type:wordpress-muplugin"
+          ]
+        }
+    }, 
+    "repositories": [
+        {
+          "type": "composer",
+          "url": "https://wpackagist.org"
+        }
+    ]
+}

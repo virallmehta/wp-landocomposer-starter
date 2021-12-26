@@ -1,0 +1,73 @@
+name: wplckit
+recipe: wordpress
+config:
+  php: '7.4'
+  via: 'nginx'
+  database: mariadb
+  webroot: wordpress
+  xdebug: true
+  config:
+    php: config/php.ini
+    database: config/my_custom.cnf
+env_file:
+  - config/.env
+proxy:
+  appserver:
+    - wplckit.lndo.site
+  mailhog:
+    - mail.wplckit.lndo.site
+  pma:
+    - pma.wplckit.lndo.site
+services:
+  appserver:
+    composer:
+      phpunit/phpunit: '*'
+  node:
+    type: node
+    globals:
+      gulp-cli: latest
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+  pma:
+    type: phpmyadmin
+    hosts:
+      - database
+events:
+  post-start:
+    - echo "Checking WordPress. Please standby..."
+    - php config/wp-install.php
+tooling:
+  npm:
+    service: appserver
+  npx:
+    service: appserver
+  yarn:
+    service: appserver
+  gulp:
+    service: appserver
+    cmd: "npx gulp"
+  composer:
+    service: appserver
+  git:
+    service: appserver
+  #svn:
+  #  service: appserver
+  phpunit:
+    service: appserver
+  #log:
+  #  service: appserver
+  #  cmd: bash /app/bin/tail-php-error-log.sh
+  wp:
+    service: appserver
+  xdebug-on:
+    service: appserver
+    description: Enable Xdebug for nginx.
+    cmd: bash /app/bin/xdebug-on.sh
+    user: root
+  xdebug-off:
+    service: appserver
+    description: Disable Xdebug for nginx.
+    cmd: bash /app/bin/xdebug-off.sh
+    user: root
