@@ -12,7 +12,7 @@ config:
 env_file:
   - config/.env
 proxy:
-  appserver:
+  appserver_nginx:
     - wplckit.lndo.site
   mailhog:
     - mail.wplckit.lndo.site
@@ -35,7 +35,7 @@ services:
     hosts:
       - database
 events:
-  post-start:
+  pre-start:
     - echo "Checking WordPress. Please standby..."
     - php config/wp-install.php
 tooling:
