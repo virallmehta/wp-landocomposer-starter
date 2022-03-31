@@ -1,31 +1,28 @@
-name: wplckit
+name: wplab
 recipe: wordpress
 config:
+  webroot: wordpress
   php: '7.4'
   via: 'nginx'
   database: mariadb
-  webroot: wordpress
   xdebug: true
-  config:
-    php: config/php.ini
-    database: config/my_custom.cnf
 env_file:
-  - config/.env
+  - .env
 proxy:
   appserver_nginx:
-    - wplckit.lndo.site
+    - wplab.lndo.site
   mailhog:
-    - mail.wplckit.lndo.site
+    - mail.wplab.lndo.site
   pma:
-    - pma.wplckit.lndo.site
+    - pma.wplab.lndo.site
 services:
   appserver:
-    composer:
-      phpunit/phpunit: '*'
+    type: php
+    build_as_root:
+      - curl -sL https://deb.nodesource.com/setup_16.x | bash -
+      - apt-get install -y nodejs
   node:
-    type: node
-    globals:
-      gulp-cli: latest
+    type: node:16
   mailhog:
     type: mailhog
     hogfrom:
@@ -34,40 +31,12 @@ services:
     type: phpmyadmin
     hosts:
       - database
-events:
-  pre-start:
-    - echo "Checking WordPress. Please standby..."
-    - php config/wp-install.php
 tooling:
   npm:
-    service: appserver
+    service: node
   npx:
+    service: node
+  test:
     service: appserver
-  yarn:
-    service: appserver
-  gulp:
-    service: appserver
-    cmd: "npx gulp"
-  composer:
-    service: appserver
-  git:
-    service: appserver
-  #svn:
-  #  service: appserver
-  phpunit:
-    service: appserver
-  #log:
-  #  service: appserver
-  #  cmd: bash /app/bin/tail-php-error-log.sh
-  wp:
-    service: appserver
-  xdebug-on:
-    service: appserver
-    description: Enable Xdebug for nginx.
-    cmd: bash /app/bin/xdebug-on.sh
-    user: root
-  xdebug-off:
-    service: appserver
-    description: Disable Xdebug for nginx.
-    cmd: bash /app/bin/xdebug-off.sh
-    user: root
+    cmd: "php /app/vendor/bin/phpunit -c /app/phpunit.xml"
+    description: Run PHPUnit tests on a specific file or Drupal module.
